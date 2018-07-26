@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="tp_quotation" language="groovy" pageWidth="595" pageHeight="842" columnWidth="483" leftMargin="56" rightMargin="56" topMargin="56" bottomMargin="56">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="defStyle" isDefault="true" isBlankWhenNull="true" fontName="Times New Roman" fontSize="12" pdfEncoding="Cp1251"/>
+	<parameter name="P_CUSTOMER" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_SD" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_CODE" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_NAME" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="P_FD" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="500" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement style="defStyle" positionType="Float" x="0" y="0" width="483" height="40"/>
+				<textElement>
+					<font isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Внимание: Заявка заполняется на бланке организации. Заявка и приложения отправляются в адрес ГУП «Мосгортранс» в отсканированном виде одним файлом."]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="defStyle" positionType="Float" x="0" y="40" width="483" height="20"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["\nКотировка (заявка)\n"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="defStyle" positionType="Float" x="0" y="60" width="483" height="44"/>
+				<textElement markup="html"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["<html>Кому:<b>"+($P{P_CUSTOMER}==null?"":$P{P_CUSTOMER})+"</b><br>От:______________________________________________________________________<br>(название, почтовый адрес, телефон, факс)</html>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="defStyle" positionType="Float" x="0" y="104" width="483" height="20"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["\nУважаемые господа!\n"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="defStyle" positionType="Float" x="0" y="124" width="483" height="154"/>
+				<textElement markup="html"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["<html>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Изучив условия закупки, размещенной на сайте ГУП «Мосгортранс»,<br>от <b>" + ($P{P_SD}==null?"":$P{P_SD}) + "</b> г. № <b>" + ($P{P_CODE}==null?"":$P{P_CODE}) + "</b> мы, нижеподписавшиеся, предлагаем осуществить поставку (выполнить работы): <b>" + ($P{P_NAME}==null?"":$P{P_NAME}) + "</b><br>за _______________ руб. ______ коп., в т.ч. НДС ___________________<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Мы обязуемся, в случае принятия нашего предложения, осуществить поставку (выполнить работы) по указанной цене, на предложенных Вами условиях.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Цена действительна до <b>" + ($P{P_FD}==null?"":$P{P_FD}) + "</b> г.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;До подготовки и оформления официального договора настоящая заявка, вместе с Вашим уведомлением о присуждении права заключения договора, будет выполнять роль договора о намерениях между нами.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Мы признаем, что размещение заявки Заказчиком и предоставление нами котировки не накладывают на стороны никаких обязательств по заключению договора.</b><br>Приложения: __________________________________на ___ листах.<br>(документы, подтверждающие качество продукции (товаров, работ, услуг)<html>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="defStyle" positionType="Float" x="0" y="298" width="483" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["            (должность)                               (подпись, печать)                                 (Ф.И.О.)"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="defStyle" positionType="Float" x="0" y="278" width="483" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["  ____________________                    _________________                     _________________"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

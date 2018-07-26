@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="tp_purchase_list" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="TpStyle" isDefault="true" hAlign="Center" fontName="Times New Roman" fontSize="12"/>
+	<parameter name="P_REPORT_TITLE" class="java.lang.String"/>
+	<parameter name="P_SD" class="java.lang.String"/>
+	<parameter name="P_FD" class="java.lang.String"/>
+	<parameter name="P_TIME" class="java.sql.Timestamp"/>
+	<queryString>
+		<![CDATA[select DATE_FORMAT(p.sd, '%d.%m.%Y') sd,
+       DATE_FORMAT(p.fd, '%d.%m.%Y') fd,
+       p.name pname, c.dsc cname,
+       p.start_price pprice, s.name victory,
+       q.price qprice, 1 sort
+  from tp_purchase p
+  left join tp_quote q
+    on p.quote_id = q.id
+  left join tp_man mq
+    on q.man_id = mq.id
+  left join tp_supplier s
+    on mq.classname = 'SUPPLIER'
+   and mq.object_id = s.id,
+       tp_man m, tp_customer c
+ where p.status_id = 3
+   and p.man_id = m.id
+   and m.classname = 'CUSTOMER'
+   and m.object_id = c.id
+   and DATE(p.sd) >= str_to_date($P{P_SD},'%d.%m.%Y')
+   and DATE(p.fd) <= str_to_date($P{P_FD},'%d.%m.%Y')
+
+ union all
+
+select 'Итого', null, null, null,
+       sum(p.start_price) pprice, null,
+       sum(q.price) qprice, 2 sort
+  from tp_purchase p
+  left join tp_quote q
+    on p.quote_id = q.id
+  left join tp_man mq
+    on q.man_id = mq.id
+  left join tp_supplier s
+    on mq.classname = 'SUPPLIER'
+   and mq.object_id = s.id,
+       tp_man m, tp_customer c
+ where p.status_id = 3
+   and p.man_id = m.id
+   and m.classname = 'CUSTOMER'
+   and m.object_id = c.id
+   and DATE(p.sd) >= str_to_date($P{P_SD},'%d.%m.%Y')
+   and DATE(p.fd) <= str_to_date($P{P_FD},'%d.%m.%Y')
+
+order by sort, str_to_date(sd,'%d.%m.%Y'), str_to_date(fd,'%d.%m.%Y')]]>
+	</queryString>
+	<field name="sd" class="java.lang.String"/>
+	<field name="fd" class="java.lang.String"/>
+	<field name="pname" class="java.lang.String"/>
+	<field name="cname" class="java.lang.String"/>
+	<field name="pprice" class="java.math.BigDecimal"/>
+	<field name="victory" class="java.lang.String"/>
+	<field name="qprice" class="java.math.BigDecimal"/>
+	<field name="sort" class="java.lang.Long"/>
+	<title>
+		<band height="43" splitType="Stretch">
+			<textField pattern="dd.MM.yyyy HH:mm:ss" isBlankWhenNull="true">
+				<reportElement style="TpStyle" positionType="Float" x="0" y="23" width="802" height="20"/>
+				<box bottomPadding="0">
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$P{P_TIME}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="TpStyle" x="0" y="0" width="802" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{P_REPORT_TITLE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="30">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="TpStyle" stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="10" width="60" height="20" backcolor="#66FFFF"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Начало подачи"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="TpStyle" stretchType="RelativeToBandHeight" mode="Opaque" x="60" y="10" width="60" height="20" backcolor="#66FFFF"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Окончание подачи"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="TpStyle" stretchType="RelativeToBandHeight" mode="Opaque" x="120" y="10" width="372" height="20" backcolor="#66FFFF"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Наименование"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="TpStyle" stretchType="RelativeToBandHeight" mode="Opaque" x="492" y="10" width="60" height="20" backcolor="#66FFFF"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Заказчик"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="TpStyle" stretchType="RelativeToBandHeight" mode="Opaque" x="552" y="10" width="80" height="20" backcolor="#66FFFF"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Начальная максимальная цена"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="TpStyle" stretchType="RelativeToBandHeight" mode="Opaque" x="632" y="10" width="90" height="20" backcolor="#66FFFF"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Победитель"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="TpStyle" stretchType="RelativeToBandHeight" mode="Opaque" x="722" y="10" width="80" height="20" backcolor="#66FFFF"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Цена победителя"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="20" splitType="Prevent">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="TpStyle" stretchType="RelativeToTallestObject" x="0" y="0" width="60" height="20"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sd}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="TpStyle" stretchType="RelativeToTallestObject" x="60" y="0" width="60" height="20"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{fd}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="TpStyle" stretchType="RelativeToTallestObject" x="120" y="0" width="372" height="20"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Left"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{pname}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="TpStyle" stretchType="RelativeToTallestObject" x="492" y="0" width="60" height="20"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{cname}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="TpStyle" stretchType="RelativeToTallestObject" x="552" y="0" width="80" height="20"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement/>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{pprice}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="TpStyle" stretchType="RelativeToTallestObject" x="632" y="0" width="90" height="20"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{victory}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="TpStyle" stretchType="RelativeToTallestObject" x="722" y="0" width="80" height="20"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement/>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{qprice}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

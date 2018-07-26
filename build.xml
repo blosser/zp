@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="windows-1251"?>
+
+<project name="zp" default="zip" basedir=".">
+
+    <description>
+        Build zp file
+    </description>
+
+    <property name="resource.dir" value="${basedir}/resource"/>
+
+    <property file="${resource.dir}/build.properties"/>
+    <property file="${resource.dir}/user.properties"/>
+
+    <property name="app.name" value="IPS"/>
+    <property name="jnlp.codebase" value="*"/>
+
+    <echo>
+        java.home = ${java.home}
+        java.version = ${java.version}
+        ant.version = ${ant.version}
+        ant.java.version = ${ant.java.version}
+        jboss.deploy.dir = ${jboss.deploy.dir}
+    </echo>
+
+    <property name="src.dir" value="${basedir}/src/java"/>
+
+    <property name="web.dir" value="${basedir}/src/web"/>
+
+    <property name="build.dir" value="${basedir}/build"/>
+
+    <property name="lib.dir" value="${basedir}/lib"/>
+
+    <property name="out.file" value="zp.zip"/>
+
+    <property name="jboss.client.dir" value="${jboss.client.dir}"/>
+
+    <path id="class.path">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="init" description="make build dir">
+        <tstamp/>
+        <mkdir dir="${build.dir}"/>
+    </target>
+
+    <target name="compile" depends="clean, init"
+            description="compile the java source ">
+        <javac srcdir="${src.dir}"
+               destdir="${build.dir}" debug="true"
+               optimize="false" deprecation="false"
+               classpathref="class.path"
+               includeantruntime="false"/>
+    </target>
+
+    <target name="clean" description="clean up">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="jar" description="build jar" depends="compile">
+
+        <delete file="${build.dir}/zpclient.jar"/>
+        <jar destfile="${build.dir}/zpclient.jar">
+            <manifest>
+                <attribute name="Main-Class"
+                           value="ru.ittrans.zp.client.Main"/>
+                <attribute name="Class-Path" value="jbossall-client.jar javadatepicker.jar jasperreports.jar"/>
+                <attribute name="Permissions" value="all-permissions"/>
+                <attribute name="Application-Name" value="${app.name}"/>
+                <attribute name="Codebase" value="${jnlp.codebase}"/>
+            </manifest>
+
+            <fileset dir="${build.dir}">
+                <include name="**/client/**/*.class"/>
+                <include name="**/io/*.class"/>
+            </fileset>
+
+            <fileset dir="${resource.dir}">
+                <include name="images/*.*"/>
+            </fileset>
+
+            <fileset dir="${resource.dir}">
+                <include name="*.rtf"/>
+                <include name="supplier.xml"/>
+            </fileset>
+        </jar>
+
+        <jar destfile="${build.dir}/zpserver.jar">
+
+            <metainf dir="${resource.dir}">
+                <include name="persistence.xml"/>
+            </metainf>
+
+            <fileset dir="${build.dir}">
+                <include name="**/ejb/*.class"/>
+                <include name="**/io/*.class"/>
+            </fileset>
+
+            <fileset dir="${resource.dir}">
+                <include name="reports/*.jrxml"/>
+            </fileset>
+
+            <fileset dir="${lib.dir}">
+                <include name="jasperreports.jar"/>
+                <include name="commons-digester-1.7.jar"/>
+                <include name="commons-beanutils-1.8.0.jar"/>
+                <include name="groovy-all-1.7.5.jar"/>
+                <include name="mail.jar"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="signedjar" depends="jar" description="signed jar">
+        <signjar jar="${build.dir}/zpclient.jar"
+                 signedjar="${build.dir}/zpclient.jar"
+                 alias="${build.sign.alias}"
+                 storepass="${build.sign.storepass}"
+                 keystore="${keystore.path}"/>
+
+        <signjar jar="${lib.dir}/javadatepicker.jar"
+                 signedjar="${build.dir}/javadatepicker.jar"
+                 alias="${build.sign.alias}"
+                 storepass="${build.sign.storepass}"
+                 keystore="${keystore.path}"/>
+
+        <signjar jar="${lib.dir}/jbossall-client.jar"
+                 signedjar="${build.dir}/jbossall-client.jar"
+                 alias="${build.sign.alias}"
+                 storepass="${build.sign.storepass}"
+                 keystore="${keystore.path}"/>
+
+        <signjar jar="${lib.dir}/jasperreports.jar"
+                 signedjar="${build.dir}/jasperreports.jar"
+                 alias="${build.sign.alias}"
+                 storepass="${build.sign.storepass}"
+                 keystore="${keystore.path}"/>
+
+        <signjar jar="${lib.dir}/commons-logging-1.0.4.jar"
+                 signedjar="${build.dir}/commons-logging-1.0.4.jar"
+                 alias="${build.sign.alias}"
+                 storepass="${build.sign.storepass}"
+                 keystore="${keystore.path}"/>
+
+        <signjar jar="${lib.dir}/commons-collections-2.1.1.jar"
+                 signedjar="${build.dir}/commons-collections-2.1.1.jar"
+                 alias="${build.sign.alias}"
+                 storepass="${build.sign.storepass}"
+                 keystore="${keystore.path}"/>
+
+        <signjar jar="${lib.dir}/commons-digester-1.7.jar"
+                 signedjar="${build.dir}/commons-digester-1.7.jar"
+                 alias="${build.sign.alias}"
+                 storepass="${build.sign.storepass}"
+                 keystore="${keystore.path}"/>
+
+        <signjar jar="${lib.dir}/poi-3.6-20091214.jar"
+                 signedjar="${build.dir}/poi-3.6-20091214.jar"
+                 alias="${build.sign.alias}"
+                 storepass="${build.sign.storepass}"
+                 keystore="${keystore.path}"/>
+    </target>
+     <!--depends="signedjar"-->
+    <target name="war" depends="signedjar"
+            description="build war files">
+        <war destfile="${build.dir}/zp.war"
+             webxml="${resource.dir}/web.xml">
+
+            <fileset dir="${build.dir}">
+                <include name="*.jar"/>
+                <exclude name="zpserver.jar"/>
+            </fileset>
+
+            <fileset dir="${resource.dir}">
+                <include name="images/zpsplash.jpg"/>
+                <include name="images/zp.gif"/>
+                <include name="*.jnlp"/>
+            </fileset>
+
+<!--
+            <fileset dir="${web.dir}">
+                <include name="*.*"/>
+            </fileset>
+-->
+
+            <classes dir="${build.dir}" includes="**/servlet/*.*"/>
+        </war>
+    </target>
+
+    <target name="all" depends="war"
+            description="generate all distribution">
+    </target>
+
+    <target name="deploy" depends="all"
+            description="deploy war files">
+        <copy todir="${jboss.deploy.dir}">
+            <fileset dir="${build.dir}">
+                <include name="zp.war"/>
+                <include name="zpserver.jar"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="zip" depends="clean,all"
+            description="zipping files">
+        <zip destfile="${build.dir}/${out.file}">
+            <zipfileset dir="${build.dir}">
+                <include name="zp.war"/>
+                <include name="zpserver.jar"/>
+            </zipfileset>
+        </zip>
+    </target>
+
+    <target name="zip_copy" depends="zip"
+            description="copy file via copy">
+        <echo message="copy zip to ${output.share}/${output.dir}"/>
+        <copy todir="${output.share}/${output.dir}/">
+            <fileset dir="${build.dir}">
+                <include name="*.zip"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="zip_smb" depends="zip"
+            description="copy file via smbclient">
+        <echo message="copy zip to ${output.share}/${output.dir}"/>
+        <exec executable="smbclient" failonerror="true" dir="${build.dir}">
+            <arg value="-U"/>
+            <arg value="${out.user}%${out.pass}"/>
+            <arg value="${output.share}"/>
+            <arg value="-c"/>
+            <arg value="put ${out.file} ${output.dir}\${out.file}"/>
+        </exec>
+    </target>
+
+</project>
